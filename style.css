@@ -1,0 +1,21 @@
+
+div.followed {
+	background-color: green;
+}
+
+div.unfollowed {
+	background-color: red;
+}
+
+div {
+	margin: 0.5em;
+	padding: 0.5em;
+}
+
+a {
+	color: black;
+}
+
+a:hover {
+	color: orange;
+}
