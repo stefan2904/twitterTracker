@@ -28,6 +28,9 @@ def writeFollow(name):
 def writeUnfollow(name):
 	writeLog(name, "unfollowed")
 
+def writeSuspended(name):
+	writeLog(name, "suspended")
+
 def writeLog(name, action):
 	mydebug(name + " " + action)
 	global logBuffer
@@ -93,7 +96,10 @@ for follow in follows:
 	writeFollow(api.get_user(id=follow).screen_name)
 
 for unfollow in unfollows:
-	writeUnfollow(api.get_user(id=unfollow).screen_name)
+	try:
+		writeUnfollow(api.get_user(id=unfollow).screen_name)
+	except tweepy.error.TweepError:
+		print writeSuspended(unfollow)
 
 saveLog()
 
