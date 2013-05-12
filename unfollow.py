@@ -12,7 +12,7 @@ followerFile = "follower.dat"
 
 logFile = "unfollow.html"
 
-logLine = "<div class='%s'><a href='https://twitter.com/%s'><strong>%s</strong></a> %s at %s</div>"
+logLine = "<div class='%s'><a href='https://twitter.com/%s'><strong>%s</strong></a> %s at %s, now at %d followers</div>"
 
 timestamp = "%d-%02d-%02d %02d:%02d" % (datetime.now().year, datetime.now().month, datetime.now().day, datetime.now().hour, datetime.now().minute)
 
@@ -22,19 +22,19 @@ DEBUG = True # Debug Output?
 
 logBuffer = " " # logFile Cache 
 
-def writeFollow(name):
-	writeLog(name, "followed")
+def writeFollow(name, followerCnt):
+	writeLog(name, followerCnt, "followed")
 
-def writeUnfollow(name):
-	writeLog(name, "unfollowed")
+def writeUnfollow(name, followerCnt):
+	writeLog(name, followerCnt, "unfollowed")
 
-def writeSuspended(name):
-	writeLog(name, "suspended")
+def writeSuspended(name, followerCnt):
+	writeLog(name, followerCnt, "suspended")
 
-def writeLog(name, action):
+def writeLog(name, followerCnt, action):
 	mydebug(name + " " + action)
 	global logBuffer
-	ll = (logLine % (action, name, name, action, timestamp)) + '\n'
+	ll = (logLine % (action, name, name, action, timestamp, followerCnt)) + '\n'
 	logBuffer = ll + logBuffer
 
 def saveLog():
@@ -98,14 +98,16 @@ if not init:
 
 # == identify (un)follows ====================================================
 if not init:
+	followerCnt = len(newFollowerList)
+
 	for follow in follows:
-		writeFollow(api.get_user(id=follow).screen_name)
+		writeFollow(api.get_user(id=follow).screen_name, followerCnt)
 
 	for unfollow in unfollows:
 		try:
-			writeUnfollow(api.get_user(id=unfollow).screen_name)
+			writeUnfollow(api.get_user(id=unfollow).screen_name, followerCnt)
 		except tweepy.error.TweepError:
-			print writeSuspended(str(unfollow))
+			print writeSuspended(str(unfollow), followerCnt)
 
 	saveLog()
 
