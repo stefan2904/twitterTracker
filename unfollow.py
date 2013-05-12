@@ -99,7 +99,7 @@ for unfollow in unfollows:
 	try:
 		writeUnfollow(api.get_user(id=unfollow).screen_name)
 	except tweepy.error.TweepError:
-		print writeSuspended(unfollow)
+		print writeSuspended(str(unfollow))
 
 saveLog()
 
