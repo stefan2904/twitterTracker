@@ -93,7 +93,7 @@ if not init:
 	unfollows = list(set(oldFollowerList) - set(newFollowerList))
 	follows = list(set(newFollowerList) - set(oldFollowerList))
 
-	mydebug("there are " + str(len(unfollows)) + " and " + str(len(follows)) + " follows!")
+	mydebug("there are " + str(len(unfollows)) + " unfollows and " + str(len(follows)) + " follows!")
 	mydebug("-")
 
 # == identify (un)follows ====================================================
