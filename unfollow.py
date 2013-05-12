@@ -16,7 +16,7 @@ logLine = "<div class='%s'><a href='https://twitter.com/%s'><strong>%s</strong><
 
 timestamp = "%d-%02d-%02d %02d:%02d" % (datetime.now().year, datetime.now().month, datetime.now().day, datetime.now().hour, datetime.now().minute)
 
-DEBUG = False # Debug Output?
+DEBUG = True # Debug Output?
 
 # == Helper Methods == =========================================
 
