@@ -71,37 +71,43 @@ for follower in tweepy.Cursor(api.followers_ids).items():
 mydebug("Loaded %d follower-ids from Twitter" % len(newFollowerList))
 
 # == Load old follower-list == ===============================================
+init = False
 
 oldFollowerList = array('i')
-f = file(followerFile,"rb")
 try:
-    oldFollowerList.fromfile(f, 20000)
-except EOFError:
-    pass
-f.close()
+	f = file(followerFile,"rb")
+except IOError:
+	init = True
 
-mydebug("Read %d follower-ids from file" % len(oldFollowerList))
+if not init:
+	try:
+	    oldFollowerList.fromfile(f, 20000)
+	except EOFError:
+	    pass
+	f.close()
+
+	mydebug("Read %d follower-ids from file" % len(oldFollowerList))
 
 # == Find (un)follows == =====================================================
+if not init:
+	unfollows = list(set(oldFollowerList) - set(newFollowerList))
+	follows = list(set(newFollowerList) - set(oldFollowerList))
 
-unfollows = list(set(oldFollowerList) - set(newFollowerList))
-follows = list(set(newFollowerList) - set(oldFollowerList))
-
-mydebug("there are " + str(len(unfollows)) + " and " + str(len(follows)) + " follows!")
-mydebug("-")
+	mydebug("there are " + str(len(unfollows)) + " and " + str(len(follows)) + " follows!")
+	mydebug("-")
 
 # == identify (un)follows ====================================================
+if not init:
+	for follow in follows:
+		writeFollow(api.get_user(id=follow).screen_name)
 
-for follow in follows:
-	writeFollow(api.get_user(id=follow).screen_name)
+	for unfollow in unfollows:
+		try:
+			writeUnfollow(api.get_user(id=unfollow).screen_name)
+		except tweepy.error.TweepError:
+			print writeSuspended(str(unfollow))
 
-for unfollow in unfollows:
-	try:
-		writeUnfollow(api.get_user(id=unfollow).screen_name)
-	except tweepy.error.TweepError:
-		print writeSuspended(str(unfollow))
-
-saveLog()
+	saveLog()
 
 # == Backup current follower-list == =========================================
 
