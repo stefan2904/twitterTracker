@@ -101,13 +101,16 @@ if not init:
 	followerCnt = len(newFollowerList)
 
 	for follow in follows:
-		writeFollow(api.get_user(id=follow).screen_name, followerCnt)
+		try:
+			writeFollow(api.get_user(id=follow).screen_name, followerCnt)
+		except tweepy.error.TweepError:
+			writeSuspended(str(follow), followerCnt)
 
 	for unfollow in unfollows:
 		try:
 			writeUnfollow(api.get_user(id=unfollow).screen_name, followerCnt)
 		except tweepy.error.TweepError:
-			print writeSuspended(str(unfollow), followerCnt)
+			writeSuspended(str(unfollow), followerCnt)
 
 	saveLog()
 
