@@ -22,20 +22,29 @@ DEBUG = True # Debug Output?
 
 logBuffer = " " # logFile Cache 
 
-def writeFollow(name, followerCnt):
-	writeLog(name, followerCnt, "followed")
+def writeFollow(name, id, followerCnt):
+	writeLog(name, str(id), followerCnt, "followed")
 
-def writeUnfollow(name, followerCnt):
-	writeLog(name, followerCnt, "unfollowed")
+def writeUnfollow(name, id, followerCnt):
+	writeLog(name, str(id), followerCnt, "unfollowed")
 
-def writeSuspended(name, followerCnt):
-	writeLog(name, followerCnt, "suspended")
+def writeSuspendedFollow(name, followerCnt):
+	writeLogSimple(name, followerCnt, "suspended-follow")
 
-def writeLog(name, followerCnt, action):
+def writeSuspendedUnfollow(name, followerCnt):
+	writeLogSimple(name, followerCnt, "suspended-unfollow")
+
+def writeLog(name, id, followerCnt, action):
 	mydebug(name + " " + action)
+	writeLogLine((logLine % (action, name, name + " (" + id + ")", action, timestamp, followerCnt)) + '\n')
+
+def writeLogSimple(name, followerCnt, action):
+	mydebug(name + " " + action)
+	writeLogLine((logLine % (action, name, name, action, timestamp, followerCnt)) + '\n')
+	
+def writeLogLine(line):
 	global logBuffer
-	ll = (logLine % (action, name, name, action, timestamp, followerCnt)) + '\n'
-	logBuffer = ll + logBuffer
+	logBuffer = line + logBuffer
 
 def saveLog():
 	f = file(logFile, "r")
@@ -102,15 +111,17 @@ if not init:
 
 	for follow in follows:
 		try:
-			writeFollow(api.get_user(id=follow).screen_name, followerCnt)
-		except tweepy.error.TweepError:
-			writeSuspended(str(follow), followerCnt)
+			writeFollow(api.get_user(id=follow).screen_name, follow, followerCnt)
+		except tweepy.error.TweepError as e:
+			mydebug("follow error: " + str(e.reason))
+			writeSuspendedFollow(str(follow), followerCnt)
 
 	for unfollow in unfollows:
 		try:
-			writeUnfollow(api.get_user(id=unfollow).screen_name, followerCnt)
-		except tweepy.error.TweepError:
-			writeSuspended(str(unfollow), followerCnt)
+			writeUnfollow(api.get_user(id=unfollow).screen_name, unfollow, followerCnt)
+		except tweepy.error.TweepError as e:
+			mydebug("unfollow error: " + str(e.reason))
+			writeSuspendedUnfollow(str(unfollow), followerCnt)
 
 	saveLog()
 

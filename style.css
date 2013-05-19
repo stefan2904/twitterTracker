@@ -7,7 +7,7 @@ div.unfollowed {
 	background-color: red;
 }
 
-div.suspended {
+div.suspended, div.suspended-follow, div.suspended-unfollow  {
 	background-color: orange;
 }
 
