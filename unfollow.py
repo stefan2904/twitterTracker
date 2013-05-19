@@ -1,3 +1,4 @@
+import sys
 import tweepy
 from config import *
 from array import array
@@ -72,10 +73,13 @@ api = tweepy.API(auth)
 newFollowerList = array('i')
 
 # == create array of current followers == ====================================
-
-for follower in tweepy.Cursor(api.followers_ids).items():
-	newFollowerList.append(follower)
-	#print len(newFollowerList), "\t", follower
+try:
+	for follower in tweepy.Cursor(api.followers_ids).items():
+		newFollowerList.append(follower)
+		#print len(newFollowerList), "\t", follower
+except tweepy.error.TweepError as e:
+			mydebug("error while loading: " + str(e.reason))
+			sys.exit()
 
 mydebug("Loaded %d follower-ids from Twitter" % len(newFollowerList))
 
@@ -130,5 +134,3 @@ if not init:
 f = file(followerFile,"wb")
 newFollowerList.tofile(f)
 f.close()
-
-
