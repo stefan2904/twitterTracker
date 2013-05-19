@@ -117,15 +117,17 @@ if not init:
 		try:
 			writeFollow(api.get_user(id=follow).screen_name, follow, followerCnt)
 		except tweepy.error.TweepError as e:
-			mydebug("follow error: " + str(e.reason))
-			writeSuspendedFollow(str(follow), followerCnt)
+			if follow != 1383578420:
+				mydebug("follow error: " + str(e.reason))
+				writeSuspendedFollow(str(follow), followerCnt)
 
 	for unfollow in unfollows:
 		try:
 			writeUnfollow(api.get_user(id=unfollow).screen_name, unfollow, followerCnt)
 		except tweepy.error.TweepError as e:
-			mydebug("unfollow error: " + str(e.reason))
-			writeSuspendedUnfollow(str(unfollow), followerCnt)
+			if unfollow != 1383578420:
+				mydebug("unfollow error: " + str(e.reason))
+				writeSuspendedUnfollow(str(unfollow), followerCnt)
 
 	saveLog()
 
