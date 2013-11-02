@@ -70,12 +70,12 @@ api = tweepy.API(auth)
 
 # == GET ids of all followers == =============================================
 
-newFollowerList = array('i')
+newFollowerList = array('L')
 
 # == create array of current followers == ====================================
 try:
 	for follower in tweepy.Cursor(api.followers_ids).items():
-		newFollowerList.append(follower)
+		newFollowerList.append(long(follower))
 		#print len(newFollowerList), "\t", follower
 except tweepy.error.TweepError as e:
 			mydebug("error while loading: " + str(e.reason))
@@ -86,7 +86,10 @@ mydebug("Loaded %d follower-ids from Twitter" % len(newFollowerList))
 # == Load old follower-list == ===============================================
 init = False
 
-oldFollowerList = array('i')
+# == Reload Follower-List  == ===============================================
+reset = False
+
+oldFollowerList = array('L')
 try:
 	f = file(followerFile,"rb")
 except IOError:
@@ -113,23 +116,24 @@ if not init:
 if not init:
 	followerCnt = len(newFollowerList)
 
-	for follow in follows:
-		try:
-			writeFollow(api.get_user(id=follow).screen_name, follow, followerCnt)
-		except tweepy.error.TweepError as e:
-			if follow != 1383578420:
-				mydebug("follow error: " + str(e.reason))
-				writeSuspendedFollow(str(follow), followerCnt)
+	if not reset:
+		for follow in follows:
+			try:
+				writeFollow(api.get_user(id=follow).screen_name, follow, followerCnt)
+			except tweepy.error.TweepError as e:
+				if follow != 1383578420:
+					mydebug("follow error: " + str(e.reason))
+					writeSuspendedFollow(str(follow), followerCnt)
 
-	for unfollow in unfollows:
-		try:
-			writeUnfollow(api.get_user(id=unfollow).screen_name, unfollow, followerCnt)
-		except tweepy.error.TweepError as e:
-			if unfollow != 1383578420:
-				mydebug("unfollow error: " + str(e.reason))
-				writeSuspendedUnfollow(str(unfollow), followerCnt)
+		for unfollow in unfollows:
+			try:
+				writeUnfollow(api.get_user(id=unfollow).screen_name, unfollow, followerCnt)
+			except tweepy.error.TweepError as e:
+				if unfollow != 1383578420:
+					mydebug("unfollow error: " + str(e.reason))
+					writeSuspendedUnfollow(str(unfollow), followerCnt)
 
-	saveLog()
+		saveLog()
 
 # == Backup current follower-list == =========================================
 
