@@ -18,11 +18,11 @@ api = API(auth)
 
 # print('Hi, %s!' % api.me().name)
 
-tweets = api.favorites()
+tweets = api.favorites(page=1)
 
 print('Loaded %d tweets ... ' % len(tweets))
 
 for tweet in tweets:
-    print('%s' % tweet.text.replace('\n', ' '))
+    print('%d by %s: %s' % (tweet.id, tweet.author.screen_name, tweet.text.replace('\n', ' ')))
 
 
